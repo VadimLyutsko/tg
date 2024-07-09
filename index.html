@@ -53,6 +53,11 @@
       </body>
 <script>
   let telegramAppChatLabs = window.Telegram.WebApp; //нужно получить объект window.Telegram.WebApp Телеграмма
+  var MainButton = telegramAppChatLabs.MainButton;
+  MainButton.show();
+  MainButton.onClick(function() {
+  WebApp.showAlert("Хорошо, ты нажал на главную кнопку.");
+});
    telegramAppChatLabs.expand(); //разворачиваем на все окно
    telegramAppChatLabs.MainButton.text = "Кнопка ChatLabst"; //Задаем текст кнопки 
    telegramAppChatLabs.MainButton.setText("ChatLabs на кнопке"); //Меняем текст на кнопке веббота в Телеграмме
