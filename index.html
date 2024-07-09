@@ -53,11 +53,6 @@
       </body>
 <script>
   let telegramAppChatLabs = window.Telegram.WebApp; //нужно получить объект window.Telegram.WebApp Телеграмма
-  var MainButton = telegramAppChatLabs.MainButton;
-  MainButton.show();
-  MainButton.onClick(function() {
-  WebApp.showAlert("Хорошо, ты нажал на главную кнопку.");
-});
    telegramAppChatLabs.expand(); //разворачиваем на все окно
    telegramAppChatLabs.MainButton.text = "Кнопка ChatLabst"; //Задаем текст кнопки 
    telegramAppChatLabs.MainButton.setText("ChatLabs на кнопке"); //Меняем текст на кнопке веббота в Телеграмме
@@ -66,7 +61,9 @@
    telegramAppChatLabs.MainButton.setParams({"color": "#000000"}); // Изменяем все параметры
    let button = document.getElementById("button"); //Используем getElementById, чтобы получить кнопку, которую сделали выше и которой присвоили id и class
    button.addEventListener('click', function(){ //Используем addEventListener, чтобы слушать клик по кнопке 
+      telegramAppChatLabs.showAlert("Хорошо, ты нажал на главную кнопку1.");
       if (telegramAppChatLabs.MainButton.isVisible){ //проверяем, видима ли кнопка, при помощи isVisible, который предоставляет нам API TG
+         telegramAppChatLabs.showAlert("Хорошо, ты нажал на главную кнопку2.");
          telegramAppChatLabs.MainButton.hide() //прячем кнопку
       }
       else{ 
