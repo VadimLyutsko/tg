@@ -61,9 +61,8 @@
    telegramAppChatLabs.MainButton.setParams({"color": "#000000"}); // Изменяем все параметры
    let button = document.getElementById("button"); //Используем getElementById, чтобы получить кнопку, которую сделали выше и которой присвоили id и class
    button.addEventListener('click', function(){ //Используем addEventListener, чтобы слушать клик по кнопке 
-      telegramAppChatLabs.showAlert("Хорошо, ты нажал на главную кнопку1.");
+      telegramAppChatLabs.showAlert(`Добро пожаловать, @${WebApp.WebAppUser.username}.`);
       if (telegramAppChatLabs.MainButton.isVisible){ //проверяем, видима ли кнопка, при помощи isVisible, который предоставляет нам API TG
-         telegramAppChatLabs.showAlert("Хорошо, ты нажал на главную кнопку2.");
          telegramAppChatLabs.MainButton.hide() //прячем кнопку
       }
       else{ 
