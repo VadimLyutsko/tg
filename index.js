@@ -1,4 +1,8 @@
+const {commands} = require('./options')
 // 👇
+const URL_TO_BOT ='https://t.me/WorkingTimeCounter_Bot'
+const URL_TO_IMG ='https://ylianova.ru/800/600/https/gutta.lv/wp-content/uploads/2015/10/test-img.jpg' 
+
 const TelegramBot = require('node-telegram-bot-api');
 // подключаем (инициализируем) библиотеку, которую установили ранее  
 // const token = 'Указываем в кавычках токен, который выдал Телеграм'
@@ -7,6 +11,12 @@ const token = '7429393887:AAH721lZwiUE2PfRPj9gBpgqnlfa2Vu9yX4'
 // задаем токен, сам API-ключ храним в отдельном файле //
 const bot = new TelegramBot(token, {polling: true});
 // создаем bot, polling в значении true необходим для получения обновлений с серверов ТГ, чтобы бот работал корректно//
+
+bot.on("polling_error", err => console.log(err.data.error.message));
+// обработаем ошибку polling'а, выведем в консоль сообщение ошибки, если она вообще будет //
+
+
+
 function formatProductCaption(product) {
     return `*${product.name}*\nПодробнее: ${product.description}`;
 }
@@ -26,9 +36,12 @@ const products = [
   },
 ];
 // создаем массив products, в котором лежат товары с нужными нам переменными: id, name, price, description, imageUrl //
-  bot.onText(/\/start/, async (msg) => {
+//   bot.onText(/\/start/, async (msg) => {
+    bot.on('text', async msg => {
+
+    // const msgWait = await bot.sendMessage(msg.chat.id, `Бот генерирует ответ...`);
     const chatId = msg.chat.id;
-    const response = 'Привет! Добро пожаловать в Telegram Bot web app!\n\nЗдесь есть вот такие возможности:';
+    const response = 'Привет! 👋🏻 Вы запустили бота!\n\nЗдесь есть вот такие возможности:';
     // Проходимся по массиву products методом map и создаем сами карточки //
     const messageOptions = products.map((product) => {
         return {
@@ -39,7 +52,27 @@ const products = [
         };
     });
 
-    await bot.sendMessage(chatId, response);
+
+    try {
+
+        if(msg.text.startsWith('/start')) {
+
+            // setTimeout(async () => {
+
+                // await bot.editMessageText('Ответ получен!', {
+        
+                //     chat_id: msgWait.chat.id,
+                //     message_id: msgWait.message_id
+        
+                // });
+        
+            // }, 5000);
+        
+        // Вместо удаления сообщения и отправки нового сделаем отправку сообщения о генерации, а затем через 5 секунд отредактируем это сообщение на наш ответ //
+            
+            await bot.sendMessage(chatId, response);
+            
+            // setTimeout(async () => {
 
     // Отправляем сообщение с карточками продуктов
     await Promise.all(messageOptions.map((options, index) => {
@@ -50,7 +83,126 @@ const products = [
             }
         });
     }));
+// }, 5000);
+
+
+            if(msg.text.length > 6) {
+
+                const refID = msg.text.slice(7);
+
+                await bot.sendMessage(msg.chat.id, `Вы зашли по ссылке пользователя с ID ${refID}`);
+
+            }
+
+        }
+        else if(msg.text == '/ref') {
+            await bot.sendMessage(msg.chat.id, `${URL_TO_BOT}?start=${msg.from.id}`);
+
+        }
+        else if(msg.text == '/help') {
+
+            await bot.sendMessage(msg.chat.id, `Раздел помощи`);
+
+        }
+        else if(msg.text == '/menu') {
+
+            await bot.sendMessage(msg.chat.id, `Меню бота`, {
+
+                reply_markup: {
+
+                    keyboard: [
+        
+                        ['⭐️ Картинка', '⭐️ Видео'],
+                        ['⭐️ Аудио', '⭐️ Голосовое сообщение'],
+                        [{text: '⭐️ Контакт', request_contact: true}, '⭐️ Геолокация'],
+                        ['❌ Закрыть меню']
+        
+                    ],
+                    resize_keyboard: true
+        
+                }
+        
+            })
+        
+        }
+        else if(msg.text == '❌ Закрыть меню') {
+
+            await bot.sendMessage(msg.chat.id, 'Меню закрыто', {
+        
+                reply_markup: {
+        
+                    remove_keyboard: true
+        
+                }
+        
+            })
+        
+        }
+        else if(msg.text == '⭐️ Картинка') {
+
+            await bot.sendPhoto(msg.chat.id, URL_TO_IMG);
+        
+        }
+        else if(msg.text == '⭐️ Аудио') {
+
+            await bot.sendAudio(msg.chat.id, './audio.mp3', {
+        
+                caption: '<b>⭐️ Аудио</b>',
+                parse_mode: 'HTML'
+        
+            });
+        
+        }
+        else if(msg.text == '⭐️ Контакт') {
+
+            //Скидываем контакт
+            await bot.sendContact(msg.chat.id, process.env.CONTACT, `Контакт`, {
+        
+                reply_to_message_id: msg.message_id
+        
+            });
+        
+        }
+        else if(msg.text == '/addtime' || msg.text == '/myhours') {
+
+            await bot.sendMessage(msg.chat.id, 'В процессе разработки,\nпопробуй что-нибудь другое', )
+        
+        }
+        else {
+
+            // await bot.sendMessage(msg.chat.id, msg.text);
+            await bot.sendMessage(msg.chat.id, 'Я тебя не понял, давай еще раз.');
+
+
+        }
+
+    }
+    catch(error) {
+
+        console.log('error: ' + error);
+
+    }
+
 });
+
+bot.on('audio', async audio => {
+
+    try {
+
+        await bot.sendAudio(audio.chat.id, audio.audio.file_id, {
+
+            caption: `Название файла: ${audio.audio.file_name}\nВес файла: ${audio.audio.file_size} байт\nДлительность аудио: ${audio.audio.duration} секунд`
+
+        })
+
+    }
+    catch(error) {
+
+        console.log(error);
+
+    }
+
+})
 
 bot.on('callback_query', async (query) => {
     console.log('Здесь сообщение');
@@ -99,4 +251,11 @@ async function sendProductList(chatId, response) {
         });
     }));
 }
+
+
+// Добавление команд в меню бота //
+
+
+bot.setMyCommands(commands);
+
 console.log('Бот запускается...');
